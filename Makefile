@@ -18,6 +18,11 @@ help:
 
 build:
 	@docker build \
+		--build-arg APT_PROXY=${APT_PROXY} \
+		--build-arg VERSION=$(shell cat VERSION) \
+		--build-arg BUILD_DATE=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
+		--build-arg VCS_REF=$(shell git rev-parse --short HEAD) \
+		--build-arg VCS_URL=$(shell git config --get remote.origin.url) \
 		--tag $(IMAGE):$(shell cat VERSION) \
 		--rm .
 	@docker tag $(IMAGE):$(shell cat VERSION) $(IMAGE):latest
@@ -25,7 +30,7 @@ build:
 push:
 	@docker push $(IMAGE):$(shell cat VERSION)
 	@docker push $(IMAGE):latest
-	@curl --request POST "https://hooks.microbadger.com/images/stefaniuk/postgresql/?"
+	@curl --request POST "https://hooks.microbadger.com/images/stefaniuk/postgres/?"
 
 start:
 	@docker run --detach \
